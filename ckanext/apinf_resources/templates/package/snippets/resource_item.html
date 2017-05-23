@@ -1,0 +1,11 @@
+{% ckan_extends %}
+{% block resource_item_explore_links %}
+  {{ super() }}
+  {% if h.is_url(res.apinf_page) %}
+    <li>
+      <a href="{{ res.apinf_page }}" target="_blank">
+        <i class="icon-comments-alt"></i> Go to Apinf
+      </a>
+    </li>
+  {% endif %}
+{% endblock %}
