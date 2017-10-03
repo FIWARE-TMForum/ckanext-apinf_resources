@@ -2,12 +2,12 @@
 {% block basic_fields %}
   {{ super() }}
     {% block apinf_input %}
-      {% call form.input('apinf_page', id='apinf-url', label=_('Apinf Page'), placeholder=_('http://apinfserver.com/example-api'),
+      {% call form.input('apinf_page', id='apinf-url', label=_('API Doc. Page'), placeholder=_('http://apinfserver.com/example-api'),
          value=data.apinf_page, error=errors.apinf_page, classes=['apinf-input', 'hidden', 'control-full']) %}
 
         <span class="info-block info-block-small hidden apinf-input">
           <i class="icon-info-sign"></i>
-          {{ _('Apinf page with API service description. Leave it blank if the service is not published there') }}
+          {{ _('Apinf site with API service description. Leave it blank if the service is not published there') }}
         </span>
       {% endcall %}
     {% endblock %}
