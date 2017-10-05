@@ -24,7 +24,7 @@ class ApinfClient:
         while not processed:
             url = base_url + pag_tmpl.format(start)
 
-            response = requests.get(url, headers=headers)
+            response = requests.get(url, headers=headers, verify=False)
 
             if response.status_code == 200:
                 resp = response.json()

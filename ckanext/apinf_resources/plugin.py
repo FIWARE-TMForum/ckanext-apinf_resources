@@ -3,24 +3,34 @@ from __future__ import unicode_literals
 import ckan.plugins as plugins
 import ckan.plugins.toolkit as toolkit
 
+from apinf.apinf_client import ApinfClient
+
 
 class Apinf_ResourcesPlugin(plugins.SingletonPlugin):
     plugins.implements(plugins.IConfigurer)
-    plugins.implements(plugins.IResourceController)
+    plugins.implements(plugins.IResourceController, inherit=True)
 
     def _include_apinf_url(self, resource):
-        # Get URL of the API description
-        # Include the new URL as mete info
-        pass
+        if resource['upload'] == '':
+            # Get URL of the API description
+            client = ApinfClient()
+            apinf_url = client.get_apinf_page(resource['url'])
+
+            if apinf_url is not None:
+                resource['apinf_page'] = apinf_url
+
+        return resource
 
     # IResourceController
     def before_create(self, context, resource):
-        # Check if the resource is a URL resource
-        pass
+        return self._include_apinf_url(resource)
 
     def before_update(self, context, current, resource):
         # Check if the URL of the resource has changed
-        pass
+        if current['url'] != resource['url']:
+            resource = self._include_apinf_url(resource)
+
+        return resource
 
     # IConfigurer
     def update_config(self, config_):
