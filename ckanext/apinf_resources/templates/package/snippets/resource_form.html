@@ -6,29 +6,19 @@
          value=data.apinf_page, error=errors.apinf_page, classes=['apinf-input', 'hidden', 'control-full']) %}
 
         <span class="info-block info-block-small hidden apinf-input">
-          <i class="icon-info-sign"></i>
-          {{ _('Apinf site with API service description. Leave it blank if the service is not published there') }}
+          <i class="fa fa-info-sign"></i>
+          {{ _('Apinf site with API service description. This value is generated automatically from your resource URL') }}
         </span>
       {% endcall %}
     {% endblock %}
 
     <script type="text/javascript">
         window.addEventListener("load", function () {
-
+            // Show Apinf site URL when the form is used for updating
             if ($('#field-image-url').is(':visible') && $('#apinf-url').val()) {
+                $('#apinf-url').attr('disabled', true);
                 $('.apinf-input').removeClass('hidden');
             }
-
-            // FIXME: Remove timeout when resolved the problem with CKAN event binding
-            setTimeout(() => {
-                $('#field-image-upload + a + a').on("click", function () {
-                    $('.apinf-input').removeClass('hidden');
-                });
-                $('.btn-remove-url').click(function() {
-                    $('.apinf-input').addClass('hidden');
-                    $('#apinf-url').val('');
-                });
-            }, 200);
         });
     </script>
 
