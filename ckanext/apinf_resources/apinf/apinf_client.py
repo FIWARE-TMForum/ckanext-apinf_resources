@@ -6,6 +6,9 @@ from urlparse import urlparse
 from ckan.common import config
 
 
+PAGE_LEN = 100
+
+
 class ApinfClient:
 
     def __init__(self):
@@ -40,7 +43,7 @@ class ApinfClient:
                         processed = True
                         break
 
-                start += 100
+                start += PAGE_LEN
             else:
                 processed = True
 
@@ -72,7 +75,7 @@ class ApinfClient:
 
             return target_api
 
-        return self._process_apis(url, '&start={}&length=100', matcher, headers={
+        return self._process_apis(url, '&start={}&length=' + unicode(PAGE_LEN), matcher, headers={
             'X-Api-Key': self._umbrella_key,
             'X-Admin-Auth-Token': self._umbrella_token
         })
@@ -97,4 +100,4 @@ class ApinfClient:
 
         url = '{}://{}/rest/v1/apis'.format(parsed_apinf.scheme, parsed_apinf.netloc)
 
-        return self._process_apis(url, '?skip={}&limit=100', matcher)
+        return self._process_apis(url, '?skip={}&limit=' + unicode(PAGE_LEN), matcher)
