@@ -40,6 +40,9 @@ sudo -u postgres psql -c 'CREATE DATABASE datastore_test WITH OWNER ckan_default
 
 echo "Modifying the configuration to setup properly the Postgres port..."
 mkdir -p data/storage
+
+sed -i "s|\/usr\/lib\/ckan\/default\/src\/ckan\/test-core\.ini|\/home\/jenkins\/ckan\/default\/src\/ckan\/test-core\.ini|g" test.ini
+
 echo "
 sqlalchemy.url = postgresql://ckan_default:pass@$DB_HOST_IP:$POSTGRES_PORT/ckan_test
 ckan.datastore.write_url = postgresql://ckan_default:pass@$DB_HOST_IP:$POSTGRES_PORT/datastore_test
