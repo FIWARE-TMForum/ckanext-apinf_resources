@@ -12,9 +12,9 @@ ckanext-apinf_resources
 =============
 
 This repository includes apinf_resources CKAN extension, which enables CKAN to be integrated with an instance
-of Apinf_ in order to have service level information of the API instances providing datasets resources.
+of `Apinf`_ in order to have service level information of the API instances providing datasets resources.
 
-.. Apinf: http://apinf.org/
+.. _Apinf: http://apinf.org/
 
 This extension is only used for those dataset resources which are registered as a link, and uses Apinf APIs
 in order to look for the Apinf site which includes the description of the involved service. If this page
