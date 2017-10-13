@@ -1,48 +1,25 @@
-.. You should enable this project on travis-ci.org and coveralls.io to make
-   these badges work. The necessary Travis and Coverage config files have been
-   generated for you.
 
-.. image:: https://travis-ci.org/FIWARE-TMForum/ckanext-apinf_resources.svg?branch=master
-    :target: https://travis-ci.org/FIWARE-TMForum/ckanext-apinf_resources
+.. image:: https://build.conwet.fi.upm.es/jenkins/buildStatus/icon?job=ckan_apinfresources
+    :target: https://build.conwet.fi.upm.es/jenkins/job/ckan_apinfresources/
 
-.. image:: https://coveralls.io/repos/FIWARE-TMForum/ckanext-apinf_resources/badge.svg
-  :target: https://coveralls.io/r/FIWARE-TMForum/ckanext-apinf_resources
-
-.. image:: https://pypip.in/download/ckanext-apinf_resources/badge.svg
-    :target: https://pypi.python.org/pypi//ckanext-apinf_resources/
-    :alt: Downloads
-
-.. image:: https://pypip.in/version/ckanext-apinf_resources/badge.svg
-    :target: https://pypi.python.org/pypi/ckanext-apinf_resources/
-    :alt: Latest Version
-
-.. image:: https://pypip.in/py_versions/ckanext-apinf_resources/badge.svg
-    :target: https://pypi.python.org/pypi/ckanext-apinf_resources/
-    :alt: Supported Python versions
-
-.. image:: https://pypip.in/status/ckanext-apinf_resources/badge.svg
-    :target: https://pypi.python.org/pypi/ckanext-apinf_resources/
-    :alt: Development Status
-
-.. image:: https://pypip.in/license/ckanext-apinf_resources/badge.svg
-    :target: https://pypi.python.org/pypi/ckanext-apinf_resources/
+.. image:: https://img.shields.io/badge/license-AGPL%203.0-blue.svg?style=flat
+    :target: https://opensource.org/licenses/AGPL-3.0
     :alt: License
+
 
 =============
 ckanext-apinf_resources
 =============
 
-.. Put a description of your extension here:
-   What does it do? What features does it have?
-   Consider including some screenshots or embedding a video!
+This repository includes apinf_resources CKAN extension, which enables CKAN to be integrated with an instance
+of Apinf_ in order to have service level information of the API instances providing datasets resources.
 
+.. Apinf: http://apinf.org/
 
-------------
-Requirements
-------------
-
-For example, you might want to mention here which versions of CKAN this
-extension works with.
+This extension is only used for those dataset resources which are registered as a link, and uses Apinf APIs
+in order to look for the Apinf site which includes the description of the involved service. If this page
+is found, this plugin creates a link which allows users to access it in order to retrieve feedback, documentation,
+API status, or backlog information about the service providing the particular dataset resource.
 
 
 ------------
@@ -76,12 +53,18 @@ To install ckanext-apinf_resources:
 Config Settings
 ---------------
 
-Document any optional config settings here. For example::
+The current CKAN extension uses the following configuration settings: ::
 
-    # The minimum number of hours to wait before re-checking a resource
-    # (optional, default: 24).
-    ckanext.apinf_resources.some_setting = some_default_value
+    # Apinf resources configuration
+    # URL of API Umbrella
+    ckan.apinf_resources.umbrella_url = https://umbrella.docker:8443
 
+    # API Key and Admin token used for accessing API Umbrella APIs
+    ckan.apinf_resources.umbrella_key = Ato9cJGVCNc5gQwRAut3131CNojXOwhmMOjIKyxX
+    ckan.apinf_resources.umbrella_token = sImknT9zQ75Gksw5XZ74KZvKMpnX7fmtqoVSrhGI
+
+    # URL of Apinf
+    ckan.apinf_resources.apinf_url = http://apinf.docker:3000
 
 ------------------------
 Development Installation
@@ -93,6 +76,7 @@ do::
     git clone https://github.com/FIWARE-TMForum/ckanext-apinf_resources.git
     cd ckanext-apinf_resources
     python setup.py develop
+    pip install -r requirements.txt
     pip install -r dev-requirements.txt
 
 
@@ -102,12 +86,9 @@ Running the Tests
 
 To run the tests, do::
 
-    nosetests --nologcapture --with-pylons=test.ini
+    python setup.py nosetest
 
-To run the tests and produce a coverage report, first make sure you have
-coverage installed in your virtualenv (``pip install coverage``) then run::
-
-    nosetests --nologcapture --with-pylons=test.ini --with-coverage --cover-package=ckanext.apinf_resources --cover-inclusive --cover-erase --cover-tests
+This command will also generate a nose and coverage XML report
 
 
 ---------------------------------
