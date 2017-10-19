@@ -1,0 +1,10 @@
+{% ckan_extends %}
+
+{% block basic_fields %}
+  {{ super() }}
+
+  {{ form.input('url', label=_('Organization URL'), id='org-url', placeholder=_('http://www.myorganization.com'), value=data.url, error=errors.url, classes=['control-full']) }}
+  {{ form.input('contact_name', label=_('Contact Name'), id='contact-name', placeholder=_('Example Name'), value=data.contact_name, error=errors.contact_name, classes=['control-full']) }}
+  {{ form.input('contact_email', label=_('Contact Email'), id='contact-email', placeholder=_('example@email.com'), value=data.contact_email, error=errors.contact_email, classes=['control-full']) }}
+  {{ form.input('contact_phone', label=_('Contact Phone'), id='contact-phone', placeholder=_('6111111111'), value=data.contact_phone, error=errors.contact_phone, classes=['control-full']) }}
+{% endblock %}

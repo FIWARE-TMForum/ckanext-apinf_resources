@@ -21,6 +21,7 @@ from __future__ import unicode_literals
 
 from urlparse import urlparse
 
+from ckan.lib.plugins import DefaultOrganizationForm
 import ckan.plugins as plugins
 import ckan.plugins.toolkit as toolkit
 
@@ -28,35 +29,88 @@ from apinf.apinf_client import ApinfClient
 from errors import AuthenticationError
 
 
-class Apinf_ResourcesPlugin(plugins.SingletonPlugin):
+class Apinf_ResourcesPlugin(plugins.SingletonPlugin, DefaultOrganizationForm):
     plugins.implements(plugins.IConfigurer)
     plugins.implements(plugins.IResourceController, inherit=True)
     plugins.implements(plugins.IOrganizationController, inherit=True)
+    plugins.implements(plugins.IGroupForm, inherit=True)
 
     def __init__(self, name=None):
         self._client = ApinfClient()
 
-    # IOrganizationController
-    def create(self, entity):
-        ckan_url = urlparse(toolkit.config.get('ckan.site_url'))
-        url = '{}://{}/organization/{}'.format(ckan_url.scheme, ckan_url.netloc, entity.name)
+    # IGroupForm - Organizations Form
+    def group_types(self):
+        return ('organization',)
 
+    def group_controller(self):
+        return 'organization'
+
+    def form_to_db_schema(self):
+        schema = super(Apinf_ResourcesPlugin, self).form_to_db_schema()
+
+        if schema is None:
+            schema = {}
+
+        # Update schema with Apinf organization fields
+        validators = [toolkit.get_validator('ignore_missing'), toolkit.get_converter('convert_to_extras')]
+
+        schema.update({
+            'url': [toolkit.get_validator('not_empty'), toolkit.get_validator('url_validator'), toolkit.get_converter('convert_to_extras')],
+            'contact_name': validators,
+            'contact_email': [toolkit.get_validator('ignore_missing'), toolkit.get_validator('email_validator'), toolkit.get_converter('convert_to_extras')],
+            'contact_phone': validators
+        })
+
+        return schema
+
+    def validate(self, context, data_dict, schema, action):
+        data, errors = toolkit.navl_validate(data_dict, schema, context)
+        if action == 'organization_show':
+            # Transform Apinf fields saved as extras into Organization object fields
+            extras = ['url', 'contact_name', 'contact_email', 'contact_phone']
+
+            effective_extras = []
+            for extra in data_dict['extras']:
+                if extra['key'] in extras:
+                    data[extra['key']] = extra['value']
+                else:
+                    effective_extras.append(extra)
+
+            data['extras'] = effective_extras
+
+        return data, errors
+
+    # IOrganizationController
+    def _create_organization(self, entity):
         # Use organization info contained in entity to create an organization in Apinf
         try:
-            apinf_id = self._client.create_organization(entity.display_name, url, entity.description)
+            apinf_id = self._client.create_organization(
+                entity.display_name, entity.description, entity.url, entity.contact_name, entity.contact_email, entity.contact_phone)
 
             # Save the id given in apinf for the organization
             entity.extras['apinf_id'] = apinf_id
-
-            # Include extras managed by Apinf in order to simplify providing this info
-            entity.extras['url'] = url
-            entity.extras['contact_name'] = ''
-            entity.extras['contact_email'] = ''
-            entity.extras['contact_phone'] = ''
             entity.save()
         except AuthenticationError as e:
             # Display a warning message
             toolkit.c.errors = unicode(e)
+
+    def create(self, entity):
+        self._create_organization(entity)
+
+    def edit(self, entity):
+        # Check if the organization is already published in Apinf
+        if 'apinf_id' not in entity.extras:
+            # TODO: Handle user deleting this property for a published organization
+            self._create_organization(entity)
+
+        else:
+            # Check if properties have been removed
+            if 'url' not in entity.extras or 'contact_name' not in entity.extras or 'contact_email' not in entity.extras \
+                    or 'contact_phone' not in entity.extras:
+                # Return an error code in the response
+                pass
+
+            # self._client.update_organization(entity.extras['apinf_id'], entity.display_name, entity.description, entity.extras['url'], entity.extras[])
 
     # IResourceController
     def _include_apinf_url(self, resource):

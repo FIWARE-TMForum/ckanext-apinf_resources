@@ -167,12 +167,15 @@ class ApinfClient:
         return self._process_apis(url, '?skip={}&limit=' + unicode(PAGE_LEN), matcher)
 
     @authenticated_request
-    def create_organization(self, name, url, description):
+    def create_organization(self, name, description, url, contact_name, contact_email, contact_phone):
         org_id = None
         org_body = {
             'name': name,
             'description': description,
-            'url': url
+            'url': url,
+            'contact_name': contact_name,
+            'contact_email': contact_email,
+            'contact_phone': contact_phone
         }
 
         url = '{}://{}/rest/v1/organizations'.format(self._parsed_apinf.scheme, self._parsed_apinf.netloc)
@@ -189,9 +192,9 @@ class ApinfClient:
         return org_id
 
     @authenticated_request
-    def delete_organization(self, org_id):
+    def update_organization(self, org_io):
         pass
 
     @authenticated_request
-    def update_organization(self, org_io):
+    def delete_organization(self, org_id):
         pass
