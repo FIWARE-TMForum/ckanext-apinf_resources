@@ -166,9 +166,7 @@ class ApinfClient:
 
         return self._process_apis(url, '?skip={}&limit=' + unicode(PAGE_LEN), matcher)
 
-    @authenticated_request
-    def create_organization(self, name, description, url, contact_name, contact_email, contact_phone):
-        org_id = None
+    def _make_organization_request(self, ep_url, method, name, description, url, contact_name, contact_email, contact_phone):
         org_body = {
             'name': name,
             'description': description,
@@ -178,12 +176,28 @@ class ApinfClient:
             'contact_phone': contact_phone
         }
 
-        url = '{}://{}/rest/v1/organizations'.format(self._parsed_apinf.scheme, self._parsed_apinf.netloc)
-
-        resp = requests.post(url, json=org_body, headers={
+        return method(ep_url, json=org_body, headers={
             'X-User-Id': self._user_id,
             'X-Auth-Token': self._user_token
         })
+
+    @authenticated_request
+    def create_organization(self, name, description, url, contact_name, contact_email, contact_phone):
+        """
+        Create a new organization in Apinf
+        :param name: Name of the new organization
+        :param description: Description of the organization
+        :param url: URL of the organization or web site
+        :param contact_name: Name of the organization contact
+        :param contact_email: Email of the organization contact
+        :param contact_phone: Phone of the organization contact
+        :return: the Id of the new organization created in Apinf
+        """
+        org_id = None
+        ep_url = '{}://{}/rest/v1/organizations'.format(self._parsed_apinf.scheme, self._parsed_apinf.netloc)
+
+        resp = self._make_organization_request(
+            ep_url, requests.post, name, description, url, contact_name, contact_email, contact_phone)
 
         if resp.status_code == 201:
             org_data = resp.json()
@@ -192,8 +206,20 @@ class ApinfClient:
         return org_id
 
     @authenticated_request
-    def update_organization(self, org_io):
-        pass
+    def update_organization(self, org_id, name, description, url, contact_name, contact_email, contact_phone):
+        """
+        Update an organization in Apinf
+        :param name: Name of the new organization
+        :param description: Description of the organization
+        :param url: URL of the organization or web site
+        :param contact_name: Name of the organization contact
+        :param contact_email: Email of the organization contact
+        :param contact_phone: Phone of the organization contact
+        :return: the Id of the new organization created in Apinf
+        """
+        ep_url = '{}://{}/rest/v1/organizations/{}'.format(self._parsed_apinf.scheme, self._parsed_apinf.netloc, org_id)
+        self._make_organization_request(
+            ep_url, requests.put, name, description, url, contact_name, contact_email, contact_phone)
 
     @authenticated_request
     def delete_organization(self, org_id):

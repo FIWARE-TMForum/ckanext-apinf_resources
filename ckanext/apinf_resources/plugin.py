@@ -104,13 +104,13 @@ class Apinf_ResourcesPlugin(plugins.SingletonPlugin, DefaultOrganizationForm):
             self._create_organization(entity)
 
         else:
-            # Check if properties have been removed
-            if 'url' not in entity.extras or 'contact_name' not in entity.extras or 'contact_email' not in entity.extras \
-                    or 'contact_phone' not in entity.extras:
-                # Return an error code in the response
-                pass
+            try:
+                self._client.update_organization(
+                    entity.extras['apinf_id'], entity.display_name, entity.description, entity.url, entity.contact_name, entity.contact_email, entity.contact_phone)
 
-            # self._client.update_organization(entity.extras['apinf_id'], entity.display_name, entity.description, entity.extras['url'], entity.extras[])
+            except AuthenticationError as e:
+                # Display a warning message
+                toolkit.c.errors = unicode(e)
 
     # IResourceController
     def _include_apinf_url(self, resource):
