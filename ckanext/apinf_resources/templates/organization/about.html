@@ -4,9 +4,15 @@
   <p>{{ c.group_dict.url }}</p>
   {% if c.group_dict.contact_name or  c.group_dict.contact_email or c.group_dict.contact_phone %}
     <h2>Contact</h2>
-    <p><i class="fa fa-user"></i>  {{ c.group_dict.contact_name }}</p>
-    <p><i class="fa fa-envelope"></i>  {{ c.group_dict.contact_email }}</p>
-    <p><i class="fa fa-phone"></i>  {{ c.group_dict.contact_phone }}</p>
+    {% if c.group_dict.contact_name %}
+      <p><i class="fa fa-user"></i>  {{ c.group_dict.contact_name }}</p>
+    {% endif %}
+    {% if c.group_dict.contact_email %}
+      <p><i class="fa fa-envelope"></i>  {{ c.group_dict.contact_email }}</p>
+    {% endif %}
+    {% if c.group_dict.contact_phone %}
+      <p><i class="fa fa-phone"></i>  {{ c.group_dict.contact_phone }}</p>
+    {% endif %}
   {% endif %}
   {{ super() }}
 {% endblock %}
