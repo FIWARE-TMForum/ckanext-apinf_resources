@@ -109,6 +109,10 @@ class ApinfClient:
         return target_url
 
     def _get_backend_api(self, api_url):
+        # Check if an API Umbrella instance has been configured
+        if not len(self._umbrella_url):
+            return
+
         parsed_api = urlparse(api_url)
         parsed_umbrella = urlparse(self._umbrella_url)
 
@@ -146,19 +150,27 @@ class ApinfClient:
         :param api_url: URL of the dataset resource
         :return: Apinf page or None
         """
+        # This step is needed for prev Apinf versions which do not include the proxied URL as 'url' param
         backend_api = self._get_backend_api(api_url)
+        backend_path = []
 
         if backend_api is None:
-            # The API is not included is API Umbrella, so it may has not been proxied
+            # The API is not included is API Umbrella or Umbrella has not been queried (new Apinf version)
             parsed_api = urlparse(api_url)
             backend_api = '{}://{}'.format(parsed_api.scheme, parsed_api.netloc)
+            backend_path = [path for path in parsed_api.path.split('/') if path != '']
 
         # Get Apinf APIs
         def matcher(api):
             target_api = None
+
             if api['url'].startswith(backend_api):
-                # Build Apinf page
-                target_api = '{}://{}/apis/{}'.format(self._parsed_apinf.scheme, self._parsed_apinf.netloc, api['slug'])
+                # Check if API include paths
+                parsed_target = urlparse(api['url'])
+                front_path = [path for path in parsed_target.path.split('/') if path != '']
+
+                if len(front_path) <= len(backend_path) and front_path == backend_path[:len(front_path)]:
+                    target_api = '{}://{}/apis/{}'.format(self._parsed_apinf.scheme, self._parsed_apinf.netloc, api['slug'])
 
             return target_api
 

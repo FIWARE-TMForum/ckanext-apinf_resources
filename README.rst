@@ -86,7 +86,7 @@ Running the Tests
 
 To run the tests, do::
 
-    python setup.py nosetest
+    python setup.py nosetests
 
 This command will also generate a nose and coverage XML report
 

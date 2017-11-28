@@ -169,7 +169,8 @@ class ApinfClientTestCase(unittest.TestCase):
 
     def setUp(self):
         # Mock CKAN config
-        apinf_client.config = {
+        apinf_client.toolkit = MagicMock()
+        apinf_client.toolkit.config = {
             'ckan.apinf_resources.umbrella_url': self._umbrella_host,
             'ckan.apinf_resources.umbrella_key': self._key,
             'ckan.apinf_resources.umbrella_token': self._token,
